@@ -36,29 +36,29 @@ public class SpringBootUserApplication extends SpringBootServletInitializer {
 		Long userCount = userRepository.count();
 		System.out.println("Users in DB: " + userCount);
 
-		BufferedReader firstNameStream = null;
-		BufferedReader lastNameStream = null;
-		try {
-			firstNameStream = new BufferedReader(new FileReader("first_name.txt"));
-			lastNameStream = new BufferedReader(new FileReader("last_name.txt"));
-			int firstNameCount = 0;
-			int lastNameCount = 0;
-			List<String> firstNameList = new ArrayList<>();
-			List<String> lastNameList = new ArrayList<>();
-			String firstName;
-			String lastName;
-			
-			while ((firstName = firstNameStream.readLine()) != null) {
-				firstNameList.add(firstName);
-				firstNameCount++;
-			}
-			while ((lastName = lastNameStream.readLine()) != null) {
-				lastNameList.add(lastName);
-				lastNameCount++;
-			}
-			
-			if (userCount < 200) {
-				 for(int i = 0; i < userNum; i++){
+		if (userCount < 200) {
+			BufferedReader firstNameStream = null;
+			BufferedReader lastNameStream = null;
+			try {
+				firstNameStream = new BufferedReader(new FileReader("first_name.txt"));
+				lastNameStream = new BufferedReader(new FileReader("last_name.txt"));
+				int firstNameCount = 0;
+				int lastNameCount = 0;
+				List<String> firstNameList = new ArrayList<>();
+				List<String> lastNameList = new ArrayList<>();
+				String firstName;
+				String lastName;
+
+				while ((firstName = firstNameStream.readLine()) != null) {
+					firstNameList.add(firstName);
+					firstNameCount++;
+				}
+				while ((lastName = lastNameStream.readLine()) != null) {
+					lastNameList.add(lastName);
+					lastNameCount++;
+				}
+
+				for (int i = 0; i < userNum; i++) {
 					User user = new User();
 					user.setFirstName(firstNameList.get(new Random().nextInt(firstNameCount)));
 					user.setLastName(lastNameList.get(new Random().nextInt(lastNameCount)));
@@ -68,12 +68,12 @@ public class SpringBootUserApplication extends SpringBootServletInitializer {
 					user.setPassword(RandomStringUtils.randomAlphanumeric(10));
 					userRepository.save(user);
 				}
-			}
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
