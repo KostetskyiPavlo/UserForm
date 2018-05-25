@@ -27,6 +27,8 @@ public class User extends BaseEntity {
 	@Column(name = "last_name")
 	private String lastName;
 	
+	private int salary;
+	
 	private String email;
 	
 	private String login;

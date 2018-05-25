@@ -9,6 +9,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -39,20 +42,30 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> findAllUsersByFilter(SimpleFilter filter) {
+	public List<User> findAllByFilter(SimpleFilter filter) {
 		return userRepository.findAll(getSpecification(filter));
 	}
-
+	
+	
+	@Override
+	public Page<User> findUsersByPage(Pageable pageable) {
+		return userRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+	}
+	
+	@Override
+	public Page<User> findUsersByPageFiltered(Pageable pageable, SimpleFilter filter) {
+		return userRepository.findAll(getSpecification(filter), PageRequest.of(pageable.getPageNumber(), filter.getPageSize()));
+	}
+	
 	private Specification<User> getSpecification(SimpleFilter filter) {
-		
 		return new Specification<User>() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				final List<Predicate> predicates = new ArrayList<>();
-
-				if (filter.getSearch().isEmpty())
+			
+				if (filter.getSearch().isEmpty() && filter.getMaxSalary().isEmpty() && filter.getMinSalary().isEmpty())
 					return null;
 
 				predicates.add(cb.like(root.get("firstName"), "%" + filter.getSearch() + "%"));
@@ -60,10 +73,18 @@ public class UserServiceImpl implements UserService {
 				predicates.add(cb.like(root.get("email"), "%" + filter.getSearch() + "%"));
 				predicates.add(cb.like(root.get("login"), "%" + filter.getSearch() + "%"));
 
-				return cb.or(predicates.toArray(new Predicate[predicates.size()]));
+				Predicate predicateSal;
+				if(filter.getMinSalary().isEmpty() && filter.getMaxSalary().isEmpty())
+					return cb.or(predicates.toArray(new Predicate[predicates.size()]));
+				if(filter.getMaxSalary().isEmpty())
+					predicateSal = cb.ge(root.get("salary"), Integer.parseInt(filter.getMinSalary()));
+				else if(filter.getMinSalary().isEmpty())
+					predicateSal = cb.le(root.get("salary"), Integer.parseInt(filter.getMaxSalary()));
+				else 
+					predicateSal = cb.between(root.get("salary"), Integer.parseInt(filter.getMinSalary()), Integer.parseInt(filter.getMaxSalary()));
+			
+				return cb.and(predicateSal, cb.or(predicates.toArray(new Predicate[predicates.size()])));
 			}
-
 		};
 	}
-
 }

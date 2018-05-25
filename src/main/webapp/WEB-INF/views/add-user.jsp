@@ -20,10 +20,12 @@
 		
 		<form:errors path="*" cssClass="error"/>
 		<br>
-		<label>First n</label>
+		<label>First name</label>
 		<form:input path="firstName"/> <br>
-		<label>Last na</label>
+		<label>Last name</label>
 		<form:input path="lastName"/> <br>
+		<label>Salary</label>
+		<form:input path="salary" type="number"/> <br>
 		<label>Email</label>
 		<form:input path="email"/> <br>
 		<label>Login</label>

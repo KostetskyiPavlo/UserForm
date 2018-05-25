@@ -11,6 +11,6 @@
 	<h2> Home page </h2>
 	
 	<a href = "/add/user">Add new user</a> <br>
-	<a href = "/users">Show all users</a>
+	<a href = "/users/pages">Show all users</a>
 </body>
 </html>

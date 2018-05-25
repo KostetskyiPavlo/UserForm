@@ -1,8 +1,11 @@
 package com.logos.dto;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
+import org.springframework.format.annotation.NumberFormat;
 
 import com.logos.validator.CheckPassword;
 import com.logos.validator.CheckUserEmailExists;
@@ -19,6 +22,9 @@ public class UserDTO {
 	
 	@NotEmpty(message = "Field LAST_NAME cant be empty")
 	private String lastName;
+	
+	@Min(3200)
+	private int salary;
 	
 	@Email
 	@CheckUserEmailExists

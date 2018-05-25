@@ -32,6 +32,9 @@ public class SpringBootUserApplication extends SpringBootServletInitializer {
 
 	private static void fillDatabase(ConfigurableApplicationContext ctx) {
 		int userNum = 2000;
+		int minSalary = 3500;
+		int maxSalary = 30000;
+		int salaryStep = 500;
 		UserRepository userRepository = ctx.getBean(UserRepository.class);
 		Long userCount = userRepository.count();
 		System.out.println("Users in DB: " + userCount);
@@ -62,13 +65,16 @@ public class SpringBootUserApplication extends SpringBootServletInitializer {
 					User user = new User();
 					user.setFirstName(firstNameList.get(new Random().nextInt(firstNameCount)));
 					user.setLastName(lastNameList.get(new Random().nextInt(lastNameCount)));
+					user.setSalary(minSalary + 
+							salaryStep * (new Random().nextInt(((maxSalary - minSalary) / salaryStep) + 1)));
 					user.setEmail(
 							user.getFirstName().toLowerCase() + "." + user.getLastName().toLowerCase() + "@gmail.com");
 					user.setLogin(user.getLastName().charAt(0) + user.getFirstName() + new Random().nextInt(999));
 					user.setPassword(RandomStringUtils.randomAlphanumeric(10));
 					userRepository.save(user);
 				}
-
+				firstNameStream.close();
+				lastNameStream.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
